@@ -11,13 +11,18 @@ namespace WebAPI.Controllers
     public class EmployeeController : ApiController
     {
 
-        public List<Employee> getemployees()
+        public static List<Employee> employees { get; set; } = new List<Employee>
         {
-            return new List<Employee> { 
-                new Employee{Id = 12 , Name = "saber"},
-                new Employee{Id = 13 , Name = "maher"},
-                new Employee{Id = 14 , Name = "ahmed"}
-            };
+            new Employee{Id = 12 , Name = "saber"},
+            new Employee{Id = 13 , Name = "maher"},
+            new Employee{Id = 14 , Name = "ahmed"}
+        };
+
+        [Route("api/emps")]
+        [HttpGet]
+        public List<Employee> AllEmployees()
+        {
+            return employees;
         }
     }
 }
