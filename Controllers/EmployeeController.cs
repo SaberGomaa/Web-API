@@ -88,5 +88,18 @@ namespace WebAPI.Controllers
             if(db.Employees.Any(e=>e.Id == id)) return true;
             else return false;
         }
+
+        public IHttpActionResult DeleteEmployee(int id)
+        {
+            var emp = db.Employees.Find(id);
+
+            if(emp is null)
+            {
+                return NotFound();
+            }
+            db.Employees.Remove(emp);
+            db.SaveChanges();
+            return Ok(emp);
+        }
     }
 }
