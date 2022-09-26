@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -74,19 +75,44 @@ namespace WebAPI.Controllers
             // success
             //return Ok();
             //return Ok(emp);           //  200
-
             //return Created("",emp);     //  201
-
             return CreatedAtRoute("DefaultApi", new {id = emp.Id},emp);
         }
 
 
-        // fn to check if emp is found in DB 
-
-        public bool foundEmp(int id)
+        //public IHttpActionResult PutEmployee([FromBody]Employee emp)
+        
+        public IHttpActionResult PutEmployee([FromUri]int id ,[FromBody]Employee emp)
         {
-            if(db.Employees.Any(e=>e.Id == id)) return true;
-            else return false;
+
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            
+            if(id != emp.Id)
+            {
+                return BadRequest("PK is wrong !");
+            }
+
+            db.Entry(emp).State = EntityState.Modified;
+
+            try
+            {
+                db.SaveChanges();
+            }
+            catch (Exception)
+            {
+                if (!foundEmp(emp.Id))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    return InternalServerError();
+                }
+            }
+            return StatusCode(HttpStatusCode.NoContent);
         }
 
         public IHttpActionResult DeleteEmployee(int id)
@@ -100,6 +126,15 @@ namespace WebAPI.Controllers
             db.Employees.Remove(emp);
             db.SaveChanges();
             return Ok(emp);
+        }
+
+
+        // fn to check if emp is found in DB 
+
+        public bool foundEmp(int id)
+        {
+            if (db.Employees.Any(e => e.Id == id)) return true;
+            else return false;
         }
     }
 }
