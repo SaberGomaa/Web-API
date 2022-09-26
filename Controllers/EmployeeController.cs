@@ -22,5 +22,19 @@ namespace WebAPI.Controllers
             return db.Employees.ToList();
         }
 
+        public IHttpActionResult GetEmployee(int id)
+        {
+            var emp = db.Employees.Find(id);
+
+            if(emp is null)
+            {
+                return NotFound();
+            }
+            else
+            {
+                return Ok(emp);
+            }
+        }
+
     }
 }
